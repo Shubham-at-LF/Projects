@@ -8,6 +8,7 @@ from prod.models import Product
 @api_view(["GET","POST"])
 def api_home(request, *args, **kwargs) :
     data = {}
+    print(type(request.data))
     serializer = ProductSerializers(data = request.data)
     if serializer.is_valid() :
         instance = serializer.save()

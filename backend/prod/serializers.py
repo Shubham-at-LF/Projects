@@ -11,7 +11,7 @@ class ProductSerializers(serializers.ModelSerializer) :
             'content',
             'price',
             'sale_price',
-            'discount'
+            'discount',
         ]
     def get_discount(self, obj) :
          try :

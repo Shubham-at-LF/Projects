@@ -1,10 +1,10 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from .models import Product
 from .serializers import ProductSerializers
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
-    queryser = Product.objects.all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializers
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
@@ -14,7 +14,42 @@ class ProductCreateAPIView(generics.CreateAPIView):
         serializer.save(content = content)
 
 
+# class ProductListAPIView(generics.ListAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class=  ProductSerializers
 
-class ProductDetailAPIView(generics.RetrieveAPIView):
+# class ProductDetailAPIView(generics.RetrieveAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class=  ProductSerializers
+
+class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class=  ProductSerializers
+    lookup_field = 'pk'
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if not instance.content:
+            instance.content  = instance
+            
+class ProductDeleteAPIView(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class=  ProductSerializers
+    lookup_field = 'pk'
+    def perform_destroy(self, instance):
+         super().perform_destroy(instance)
+
+
+class ProductMixinView(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView
+    ):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializers
+    lookup_field = 'pk'
+
+    def get(self ,  request ,  *args, **kwargs):
+        pk = kwargs['pk']
+        if pk is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
