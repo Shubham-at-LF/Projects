@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins,permissions, authentication
 from .models import Product
 from .serializers import ProductSerializers
 
@@ -14,9 +14,11 @@ class ProductCreateAPIView(generics.CreateAPIView):
         serializer.save(content = content)
 
 
-# class ProductListAPIView(generics.ListAPIView):
-#     queryset = Product.objects.all()
-#     serializer_class=  ProductSerializers
+class ProductListAPIView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class=  ProductSerializers
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes =[permissions.IsAuthenticated]
 
 # class ProductDetailAPIView(generics.RetrieveAPIView):
 #     queryset = Product.objects.all()
